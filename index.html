@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>龙侧 LongCe — 每一个中文大模型，一个侧边栏</title>
+<meta name="description" content="龙侧 LongCe：把 DeepSeek、通义千问、Kimi、智谱、零一、百川、MiniMax 装进浏览器侧边栏。开源、自带密钥、数据只在本地。" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17130f;
+    --ink-soft:#3c352d;
+    --muted:#726657;
+    --paper:#f6f1e7;
+    --paper-2:#efe7d7;
+    --paper-3:#e7dcc7;
+    --line:#ddceb2;
+    --vermilion:#d7263d;
+    --lacquer:#9e1523;
+    --gold:#b8903f;
+    --jade:#1f7a5c;
+    --card:#fffdf8;
+    --shadow:0 1px 0 rgba(23,19,15,.04), 0 12px 30px -12px rgba(23,19,15,.18);
+    --serif:"Noto Serif SC", serif;
+    --sans-cjk:"Noto Sans SC", sans-serif;
+    --display:"Space Grotesk","Noto Sans SC",sans-serif;
+    --body:"Inter","Noto Sans SC",sans-serif;
+    --mono:"JetBrains Mono",monospace;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 1px 1px, rgba(23,19,15,.05) 1px, transparent 0);
+    background-size:26px 26px;
+  }
+  :lang(zh),[data-lang="zh"]{font-family:var(--sans-cjk)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--lacquer)}
+
+  /* ---------- Seal / logo ---------- */
+  .seal{
+    display:inline-grid;place-items:center;
+    width:40px;height:40px;border-radius:11px;
+    background:linear-gradient(160deg,var(--vermilion),var(--lacquer));
+    color:#fff;font-family:var(--serif);font-weight:900;font-size:24px;line-height:1;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), inset 0 -3px 8px rgba(0,0,0,.22), 0 4px 12px -4px rgba(158,21,35,.6);
+    text-shadow:0 1px 1px rgba(0,0,0,.25);
+  }
+  .seal.lg{width:56px;height:56px;border-radius:15px;font-size:34px}
+
+  /* ---------- Nav ---------- */
+  header.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 86%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:20px;height:68px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:19px}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.16em;color:var(--muted);margin-top:1px}
+  .nav-links{display:flex;gap:26px;margin-left:auto;align-items:center}
+  .nav-links a.navlink{font-size:14px;color:var(--ink-soft);font-weight:500}
+  .nav-links a.navlink:hover{color:var(--vermilion)}
+  .langtoggle{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--ink-soft);letter-spacing:.06em}
+  .langtoggle:hover{border-color:var(--vermilion);color:var(--vermilion)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;padding:10px 18px;border-radius:10px;cursor:pointer;border:1px solid transparent;font-family:var(--body);transition:transform .12s ease, box-shadow .2s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--vermilion);color:#fff;box-shadow:0 6px 16px -6px rgba(215,38,61,.7)}
+  .btn-primary:hover{background:var(--lacquer)}
+  .btn-ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .nav .btn{padding:9px 15px}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;overflow:hidden;padding:66px 0 40px}
+  .hero-glyph{position:absolute;right:-6%;top:-14%;font-family:var(--serif);font-weight:900;font-size:min(52vw,720px);line-height:1;color:var(--vermilion);opacity:.06;pointer-events:none;user-select:none;z-index:0}
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,4.6vw,56px);line-height:1.08;letter-spacing:-.01em;margin:18px 0 0}
+  [data-lang="zh"] .hero h1{font-family:var(--serif);letter-spacing:0;line-height:1.14;font-weight:900}
+  .hero .lede{font-size:18px;color:var(--ink-soft);margin:20px 0 0;max-width:30em}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:22px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.03em}
+  .trust span{display:inline-flex;align-items:center;gap:6px}
+  .trust b{color:var(--jade);font-weight:600}
+
+  /* ---------- Panel mock (signature) ---------- */
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .frame-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper-2);border-bottom:1px solid var(--line)}
+  .dot{width:11px;height:11px;border-radius:50%;background:#d9cbb0}
+  .dot:nth-child(1){background:#e0745f}.dot:nth-child(2){background:#e0b24f}.dot:nth-child(3){background:#7bb98a}
+  .frame-url{margin-left:10px;font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px 10px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .frame-body{display:grid;grid-template-columns:1fr 232px;min-height:340px}
+  .page-fake{padding:20px;position:relative;background:
+     linear-gradient(var(--paper-3) 0 0) 20px 24px/58% 13px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 48px/82% 9px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 66px/74% 9px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 84px/80% 9px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 112px/40% 9px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 130px/78% 9px no-repeat,
+     linear-gradient(var(--paper-3) 0 0) 20px 148px/70% 9px no-repeat;
+  }
+  .page-tag{position:absolute;bottom:16px;left:20px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em}
+  .panel{background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column}
+  .panel-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+  .panel-head .seal{width:24px;height:24px;border-radius:7px;font-size:15px}
+  .panel-head .nm{font-family:var(--display);font-weight:700;font-size:13px}
+  .panel-head .nm small{font-family:var(--mono);font-weight:400;font-size:9px;color:var(--muted);letter-spacing:.1em;display:block}
+  .compare-pill{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--vermilion);border:1px solid var(--vermilion);border-radius:999px;padding:3px 8px;letter-spacing:.06em}
+  .panel-scroll{padding:12px;display:flex;flex-direction:column;gap:10px;overflow:hidden;flex:1}
+  .msg-user{align-self:flex-end;background:var(--vermilion);color:#fff;font-size:12px;padding:7px 11px;border-radius:12px 12px 3px 12px;max-width:88%}
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .cmp-col{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px;min-height:120px}
+  .cmp-col h5{margin:0 0 6px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:5px}
+  .cmp-col h5 i{width:6px;height:6px;border-radius:50%;background:var(--vermilion);font-style:normal}
+  .cmp-col:nth-child(2) h5 i{background:var(--jade)}
+  .stream{font-size:11.5px;line-height:1.55;color:var(--ink-soft);white-space:pre-wrap;font-family:var(--sans-cjk);min-height:1em}
+  .cursor::after{content:"▍";color:var(--vermilion);animation:blink 1s steps(2) infinite;margin-left:1px}
+  @keyframes blink{50%{opacity:0}}
+  .panel-compose{border-top:1px solid var(--line);padding:9px 10px;display:flex;gap:6px;align-items:center;background:var(--card)}
+  .panel-compose .fakein{flex:1;font-family:var(--sans-cjk);font-size:11px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
+  .panel-compose .send{width:26px;height:26px;border-radius:7px;background:var(--vermilion);color:#fff;display:grid;place-items:center;font-size:13px}
+
+  /* ---------- Marquee of providers ---------- */
+  .providers{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper-2);padding:20px 0}
+  .prov-lead{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;text-align:center}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:500}
+  .chip b{color:var(--ink);font-weight:600}
+  .chip span{color:var(--muted);font-size:11px;font-family:var(--sans-cjk)}
+  .chip i{width:7px;height:7px;border-radius:50%;background:var(--vermilion);font-style:normal;box-shadow:0 0 0 3px rgba(215,38,61,.12)}
+
+  /* ---------- Sections ---------- */
+  section.block{padding:76px 0}
+  .sec-head{max-width:36em}
+  .sec-head h2{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:700;letter-spacing:-.01em;margin:10px 0 0}
+  [data-lang="zh"] .sec-head h2{font-family:var(--serif);font-weight:900;letter-spacing:0}
+  .sec-head p{color:var(--muted);margin:12px 0 0;font-size:16px}
+
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;position:relative;transition:transform .15s ease, box-shadow .2s ease}
+  .feat:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .feat .ic{width:38px;height:38px;border-radius:10px;background:var(--paper-2);display:grid;place-items:center;color:var(--vermilion);margin-bottom:14px}
+  .feat h3{margin:0;font-size:17px;font-weight:600}
+  .feat h3 small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:3px;font-weight:400}
+  .feat p{margin:9px 0 0;color:var(--ink-soft);font-size:14px}
+
+  /* ---------- Steps ---------- */
+  .steps{background:var(--ink);color:var(--paper);border-radius:20px;padding:52px 44px;position:relative;overflow:hidden}
+  .steps::before{content:"龙";position:absolute;font-family:var(--serif);font-weight:900;font-size:360px;right:-40px;bottom:-120px;color:#fff;opacity:.04;line-height:1}
+  .steps .sec-head h2{color:#fff}
+  .steps .sec-head p{color:#c9bda9}
+  .step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:36px;position:relative;z-index:1}
+  .step .num{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.1em}
+  .step h4{margin:12px 0 0;font-size:18px;font-weight:600;font-family:var(--display)}
+  [data-lang="zh"] .step h4{font-family:var(--sans-cjk)}
+  .step h4 small{display:block;font-size:12px;color:#b6a98f;font-family:var(--mono);font-weight:400;margin-top:2px;letter-spacing:.08em}
+  .step p{color:#cfc3af;font-size:14px;margin:10px 0 0}
+  .step code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.08);padding:2px 6px;border-radius:5px;color:#f0e6d2}
+
+  /* ---------- Privacy ---------- */
+  .privacy{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .privacy-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px}
+  .pr-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:11px}
+  .pr-row+.pr-row{border-top:1px solid var(--paper-3)}
+  .pr-row .k{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+  .pr-row.good .k{background:rgba(31,122,92,.12);color:var(--jade)}
+  .pr-row.no .k{background:rgba(215,38,61,.1);color:var(--vermilion)}
+  .pr-row .t{font-size:14px}
+  .pr-row .t b{display:block;font-weight:600;font-size:15px}
+  .pr-row .t span{color:var(--muted);font-size:13px}
+
+  /* ---------- CTA band ---------- */
+  .cta-band{text-align:center;padding:84px 0}
+  .cta-band .seal{margin:0 auto 22px}
+  .cta-band h2{font-family:var(--display);font-size:clamp(28px,3.4vw,42px);font-weight:700;margin:0}
+  [data-lang="zh"] .cta-band h2{font-family:var(--serif);font-weight:900}
+  .cta-band p{color:var(--muted);margin:14px auto 30px;max-width:34em}
+  .cta-band .hero-cta{justify-content:center}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);padding:34px 0;background:var(--paper-2)}
+  .foot-in{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+  .foot-in .brand small{color:var(--muted)}
+  .foot-links{display:flex;gap:22px;font-size:13px;color:var(--muted)}
+  .foot-links a:hover{color:var(--vermilion)}
+  .foot-legal{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;width:100%;padding-top:8px;border-top:1px dashed var(--line);margin-top:6px}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:900px){
+    .hero-grid,.privacy{grid-template-columns:1fr;gap:36px}
+    .feature-grid,.step-grid{grid-template-columns:1fr 1fr}
+    .nav-links a.navlink{display:none}
+    .frame-body{grid-template-columns:1fr}
+    .page-fake{display:none}
+    .panel{border-left:none}
+  }
+  @media(max-width:560px){
+    .feature-grid,.step-grid{grid-template-columns:1fr}
+    .steps{padding:38px 22px}
+    .cmp{grid-template-columns:1fr}
+    .hero{padding-top:40px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .cursor::after{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body data-lang="zh">
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <span class="seal">龙</span>
+      <span>龙侧<small>LONGCE</small></span>
+    </a>
+    <nav class="nav-links">
+      <a class="navlink" href="#features" data-i18n="nav.features"></a>
+      <a class="navlink" href="#models" data-i18n="nav.models"></a>
+      <a class="navlink" href="#privacy" data-i18n="nav.privacy"></a>
+      <a class="navlink" href="https://github.com/wushu75/longce" target="_blank" rel="noopener">GitHub</a>
+      <button class="langtoggle" id="langBtn" aria-label="Switch language">EN / 中</button>
+      <a class="btn btn-primary" href="#get" data-i18n="nav.cta"></a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glyph" aria-hidden="true">龙</div>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow" data-i18n="hero.eyebrow"></span>
+        <h1 data-i18n="hero.h1"></h1>
+        <p class="lede" data-i18n="hero.lede"></p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#get" data-i18n="hero.cta1"></a>
+          <a class="btn btn-ghost" href="https://github.com/wushu75/longce" target="_blank" rel="noopener" data-i18n="hero.cta2"></a>
+        </div>
+        <div class="trust">
+          <span data-i18n="trust.mit"></span>
+          <span data-i18n="trust.server"></span>
+          <span data-i18n="trust.track"></span>
+          <span data-i18n="trust.chrome"></span>
+        </div>
+      </div>
+
+      <!-- Signature: docked side-panel demo -->
+      <div class="frame" aria-label="LongCe side panel demo">
+        <div class="frame-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="frame-url">https://example.com/article</span>
+        </div>
+        <div class="frame-body">
+          <div class="page-fake"><span class="page-tag" data-i18n="demo.pagetag"></span></div>
+          <aside class="panel">
+            <div class="panel-head">
+              <span class="seal">龙</span>
+              <span class="nm">龙侧<small data-i18n="demo.compare">COMPARE</small></span>
+              <span class="compare-pill">DeepSeek · Kimi</span>
+            </div>
+            <div class="panel-scroll">
+              <div class="msg-user" data-i18n="demo.prompt"></div>
+              <div class="cmp">
+                <div class="cmp-col">
+                  <h5><i></i>DeepSeek</h5>
+                  <div class="stream cursor" id="s1"></div>
+                </div>
+                <div class="cmp-col">
+                  <h5><i></i>Kimi</h5>
+                  <div class="stream cursor" id="s2"></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel-compose">
+              <span class="fakein" data-i18n="demo.input"></span>
+              <span class="send">↑</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVIDERS -->
+  <section class="providers" id="models">
+    <div class="wrap">
+      <div class="prov-lead" data-i18n="prov.lead"></div>
+      <div class="chips">
+        <span class="chip"><i></i><b>DeepSeek</b><span data-i18n="p.deepseek"></span></span>
+        <span class="chip"><i></i><b>Qwen</b><span data-i18n="p.qwen"></span></span>
+        <span class="chip"><i></i><b>Kimi</b><span data-i18n="p.kimi"></span></span>
+        <span class="chip"><i></i><b>GLM</b><span data-i18n="p.glm"></span></span>
+        <span class="chip"><i></i><b>Yi</b><span data-i18n="p.yi"></span></span>
+        <span class="chip"><i></i><b>Baichuan</b><span data-i18n="p.baichuan"></span></span>
+        <span class="chip"><i></i><b>MiniMax</b><span data-i18n="p.minimax"></span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="feat.eyebrow"></span>
+        <h2 data-i18n="feat.h2"></h2>
+        <p data-i18n="feat.sub"></p>
+      </div>
+      <div class="feature-grid">
+        <div class="feat">
+          <div class="ic">◧</div>
+          <h3 data-i18n="f1.t"><small>ALWAYS-ON PANEL</small></h3>
+          <p data-i18n="f1.d"></p>
+        </div>
+        <div class="feat">
+          <div class="ic">⊞</div>
+          <h3 data-i18n="f2.t"><small>COMPARE MODE</small></h3>
+          <p data-i18n="f2.d"></p>
+        </div>
+        <div class="feat">
+          <div class="ic">❐</div>
+          <h3 data-i18n="f3.t"><small>PAGE-AWARE</small></h3>
+          <p data-i18n="f3.d"></p>
+        </div>
+        <div class="feat">
+          <div class="ic">⤳</div>
+          <h3 data-i18n="f4.t"><small>SMART ROUTING</small></h3>
+          <p data-i18n="f4.d"></p>
+        </div>
+        <div class="feat">
+          <div class="ic">◐</div>
+          <h3 data-i18n="f5.t"><small>LITE MODE</small></h3>
+          <p data-i18n="f5.d"></p>
+        </div>
+        <div class="feat">
+          <div class="ic">❝</div>
+          <h3 data-i18n="f6.t"><small>PROMPT TEMPLATES</small></h3>
+          <p data-i18n="f6.d"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEPS -->
+  <section class="block" id="get" style="padding-top:0">
+    <div class="wrap">
+      <div class="steps">
+        <div class="sec-head">
+          <span class="eyebrow" style="color:var(--gold)" data-i18n="how.eyebrow"></span>
+          <h2 data-i18n="how.h2"></h2>
+          <p data-i18n="how.sub"></p>
+        </div>
+        <div class="step-grid">
+          <div class="step">
+            <div class="num">01</div>
+            <h4 data-i18n="s1.t"><small>LOAD IT</small></h4>
+            <p data-i18n="s1.d"></p>
+          </div>
+          <div class="step">
+            <div class="num">02</div>
+            <h4 data-i18n="s2.t"><small>ADD KEYS</small></h4>
+            <p data-i18n="s2.d"></p>
+          </div>
+          <div class="step">
+            <div class="num">03</div>
+            <h4 data-i18n="s3.t"><small>START CHATTING</small></h4>
+            <p data-i18n="s3.d"></p>
+          </div>
+        </div>
+        <div class="hero-cta" style="margin-top:34px">
+          <a class="btn btn-primary" href="https://github.com/wushu75/longce" target="_blank" rel="noopener" data-i18n="how.cta1"></a>
+          <a class="btn btn-ghost" href="https://github.com/wushu75/longce" target="_blank" rel="noopener" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.28)" data-i18n="how.cta2"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="block" id="privacy" style="padding-top:0">
+    <div class="wrap privacy">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="priv.eyebrow"></span>
+        <h2 data-i18n="priv.h2"></h2>
+        <p data-i18n="priv.sub"></p>
+      </div>
+      <div class="privacy-card">
+        <div class="pr-row good"><span class="k">✓</span><span class="t"><b data-i18n="priv.r1t"></b><span data-i18n="priv.r1d"></span></span></div>
+        <div class="pr-row good"><span class="k">✓</span><span class="t"><b data-i18n="priv.r2t"></b><span data-i18n="priv.r2d"></span></span></div>
+        <div class="pr-row no"><span class="k">✕</span><span class="t"><b data-i18n="priv.r3t"></b><span data-i18n="priv.r3d"></span></span></div>
+        <div class="pr-row no"><span class="k">✕</span><span class="t"><b data-i18n="priv.r4t"></b><span data-i18n="priv.r4d"></span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section class="cta-band">
+    <div class="wrap">
+      <span class="seal lg">龙</span>
+      <h2 data-i18n="band.h2"></h2>
+      <p data-i18n="band.sub"></p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/wushu75/longce" target="_blank" rel="noopener" data-i18n="band.cta1"></a>
+        <a class="btn btn-ghost" href="https://github.com/wushu75/longce" target="_blank" rel="noopener" data-i18n="band.cta2"></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="brand" href="#top"><span class="seal">龙</span><span>龙侧<small>LONGCE</small></span></a>
+    <div class="foot-links">
+      <a href="#features" data-i18n="nav.features"></a>
+      <a href="#privacy" data-i18n="nav.privacy"></a>
+      <a href="https://github.com/wushu75/longce" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="foot-legal" data-i18n="foot.legal"></div>
+  </div>
+</footer>
+
+<script>
+const I18N = {
+  zh:{
+    "nav.features":"功能","nav.models":"模型","nav.privacy":"隐私","nav.cta":"获取扩展",
+    "hero.eyebrow":"开源 · Manifest V3 · 自带密钥",
+    "hero.h1":"每一个中文大模型，一个侧边栏搞定",
+    "hero.lede":"DeepSeek、通义千问、Kimi、智谱、零一、百川、MiniMax —— 常驻浏览器侧栏，随时唤出。密钥和对话只留在你自己的设备上。",
+    "hero.cta1":"下载扩展","hero.cta2":"在 GitHub 上 Star",
+    "trust.mit":"MIT 开源","trust.server":"无服务器","trust.track":"无埋点","trust.chrome":"Chrome 116+",
+    "demo.pagetag":"当前网页","demo.compare":"对比","demo.prompt":"用三点总结这个页面",
+    "demo.input":"问点什么…",
+    "prov.lead":"内置七家中文大模型，添加一家只需一个配置项",
+    "p.deepseek":"深度求索","p.qwen":"通义千问","p.kimi":"月之暗面","p.glm":"智谱","p.yi":"零一万物","p.baichuan":"百川智能","p.minimax":"MiniMax",
+    "feat.eyebrow":"功能","feat.h2":"一个侧栏，把该有的都给你",
+    "feat.sub":"不是又一个套壳聊天框——它懂你正在看的网页，也懂把哪个任务交给哪个模型。",
+    "f1.t":"常驻侧边栏","f1.d":"停靠在浏览器右侧，不遮挡网页。读着文章随手就能问，不用切标签页。",
+    "f2.t":"多模型对比","f2.d":"同一个问题，2–3 个模型并排作答。一眼看出谁答得更合你意。",
+    "f3.t":"页面感知","f3.d":"一键总结当前网页、提取要点、根据内容写回复或社媒文案。",
+    "f4.t":"智能路由","f4.d":"按任务分流：写代码找 DeepSeek，写文案找 Kimi，翻译找通义——都可自定义。",
+    "f5.t":"Lite 模式","f5.d":"长文先用小模型压缩再提问，省下大把 token 和等待时间。",
+    "f6.t":"提示词模板","f6.d":"润色、PRD、小红书、翻译、微博——常用模板一键插入。",
+    "how.eyebrow":"三步开始","how.h2":"两分钟装好，立刻能用",
+    "how.sub":"无需注册，无需后端。解压、填钥、开聊。",
+    "s1.t":"加载扩展","s1.d":"解压后打开 chrome://extensions，开启开发者模式，选「加载已解压的扩展程序」。",
+    "s2.t":"填入密钥","s2.d":"在设置里粘贴任意厂商的 API Key，全部保存在本地 chrome.storage。",
+    "s3.t":"开始聊天","s3.d":"点红色龙形图标唤出侧栏，选模型或开对比，直接开问。",
+    "how.cta1":"前往 GitHub 下载","how.cta2":"查看安装文档",
+    "priv.eyebrow":"隐私优先","priv.h2":"你的密钥，你的对话，不出这台设备",
+    "priv.sub":"龙侧没有自己的服务器。请求直接从你的浏览器发往你选择的厂商，我们看不到、也不想看到。",
+    "priv.r1t":"数据只在本地","priv.r1d":"密钥与历史记录存于 chrome.storage.local。",
+    "priv.r2t":"直连厂商 API","priv.r2d":"你的浏览器直接调用官方接口，中间没有龙侧的服务器。",
+    "priv.r3t":"没有账号","priv.r3d":"不用注册、不用登录，装上就能用。",
+    "priv.r4t":"没有埋点","priv.r4d":"默认不含任何分析或追踪代码。",
+    "band.h2":"把整个中文大模型世界，收进侧边栏",
+    "band.sub":"免费、开源、MIT 许可。自带密钥，永远属于你。",
+    "band.cta1":"在 GitHub 上获取","band.cta2":"Star 一下 ★",
+    "foot.legal":"MIT License · 龙侧 LongCe · github.com/wushu75/longce · Every Chinese LLM, one sidebar.",
+    "demo.stream1":"① 主旨：文章讨论了侧边栏式 AI 助手的兴起。\n② 论据：作者给出三组使用数据支撑。\n③ 结论：建议按任务选择模型。",
+    "demo.stream2":"要点一：AI 正从独立页面走向常驻侧栏。\n要点二：多模型对比能显著提升选择效率。\n要点三：本地优先是信任的前提。"
+  },
+  en:{
+    "nav.features":"Features","nav.models":"Models","nav.privacy":"Privacy","nav.cta":"Get it",
+    "hero.eyebrow":"Open source · Manifest V3 · Bring your own keys",
+    "hero.h1":"Every Chinese LLM, one sidebar",
+    "hero.lede":"DeepSeek, Qwen, Kimi, GLM, Yi, Baichuan and MiniMax — docked in your browser's side panel, a keystroke away. Your keys and chats never leave your machine.",
+    "hero.cta1":"Download extension","hero.cta2":"Star on GitHub",
+    "trust.mit":"MIT licensed","trust.server":"No server","trust.track":"No tracking","trust.chrome":"Chrome 116+",
+    "demo.pagetag":"current page","demo.compare":"COMPARE","demo.prompt":"Summarize this page in three points",
+    "demo.input":"Ask anything…",
+    "prov.lead":"Seven Chinese LLMs built in — adding another is one config object",
+    "p.deepseek":"DeepSeek","p.qwen":"Alibaba","p.kimi":"Moonshot","p.glm":"Zhipu","p.yi":"01.AI","p.baichuan":"Baichuan","p.minimax":"MiniMax",
+    "feat.eyebrow":"Features","feat.h2":"One panel that actually pulls its weight",
+    "feat.sub":"Not another chat wrapper — it understands the page you're on, and which model each task belongs to.",
+    "f1.t":"Always-on panel","f1.d":"Docks to the right of any page without covering it. Ask as you read — no tab-switching.",
+    "f2.t":"Compare mode","f2.d":"One prompt, two or three models answering side by side. See who fits you best at a glance.",
+    "f3.t":"Page-aware","f3.d":"Summarize the current page, pull key points, or draft a reply from what's on screen.",
+    "f4.t":"Smart routing","f4.d":"Send code to DeepSeek, copy to Kimi, translation to Qwen — every rule is yours to change.",
+    "f5.t":"Lite mode","f5.d":"Long text gets pre-condensed by a cheap model first, saving tokens and waiting.",
+    "f6.t":"Prompt templates","f6.d":"Polish, PRD, Xiaohongshu, translate, Weibo — drop in your go-to prompts in one click.",
+    "how.eyebrow":"Three steps","how.h2":"Installed in two minutes, usable right away",
+    "how.sub":"No sign-up, no backend. Unzip, add a key, start chatting.",
+    "s1.t":"Load the extension","s1.d":"Unzip, open chrome://extensions, turn on Developer mode, and choose “Load unpacked”.",
+    "s2.t":"Add your keys","s2.d":"Paste any provider's API key in Settings — all stored locally in chrome.storage.",
+    "s3.t":"Start chatting","s3.d":"Click the red dragon icon to open the panel, pick a model or compare, and ask.",
+    "how.cta1":"Download from GitHub","how.cta2":"Read the install guide",
+    "priv.eyebrow":"Privacy first","priv.h2":"Your keys and chats never leave this machine",
+    "priv.sub":"LongCe has no server of its own. Requests go straight from your browser to the provider you chose — we can't see them, and don't want to.",
+    "priv.r1t":"Local-only data","priv.r1d":"Keys and history live in chrome.storage.local.",
+    "priv.r2t":"Direct to provider","priv.r2d":"Your browser calls the official API — no LongCe server in between.",
+    "priv.r3t":"No account","priv.r3d":"Nothing to register or log into. Install and go.",
+    "priv.r4t":"No analytics","priv.r4d":"Ships with zero tracking or telemetry by default.",
+    "band.h2":"Fold the whole Chinese-LLM world into your sidebar",
+    "band.sub":"Free, open source, MIT licensed. Bring your own keys — they stay yours.",
+    "band.cta1":"Get it on GitHub","band.cta2":"Star it ★",
+    "foot.legal":"MIT License · 龙侧 LongCe · github.com/wushu75/longce · Every Chinese LLM, one sidebar.",
+    "demo.stream1":"① Thesis: the piece traces the rise of sidebar-style AI assistants.\n② Evidence: three usage datasets are cited.\n③ Takeaway: pick a model per task.",
+    "demo.stream2":"Point 1: AI is moving from standalone pages into a docked panel.\nPoint 2: comparing models speeds up the choice.\nPoint 3: local-first is the basis for trust."
+  }
+};
+
+let lang = "zh";
+function apply(l){
+  lang = l;
+  document.body.setAttribute("data-lang", l);
+  document.documentElement.lang = (l === "zh") ? "zh-CN" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k = el.getAttribute("data-i18n");
+    const small = el.querySelector("small");        // preserve utility sub-labels
+    const val = I18N[l][k];
+    if(val === undefined) return;
+    if(small){ el.childNodes[0].nodeValue = val; }
+    else { el.textContent = val; }
+  });
+  document.getElementById("langBtn").textContent = (l === "zh") ? "EN / 中" : "中 / EN";
+  runStream();
+}
+document.getElementById("langBtn").addEventListener("click", ()=> apply(lang === "zh" ? "en" : "zh"));
+
+/* streaming compare demo */
+let streamTimers = [];
+function typeInto(el, text, speed, done){
+  el.textContent = "";
+  let i = 0;
+  const tick = ()=>{
+    el.textContent = text.slice(0, i++);
+    if(i <= text.length){ streamTimers.push(setTimeout(tick, speed)); }
+    else if(done){ done(); }
+  };
+  tick();
+}
+function runStream(){
+  streamTimers.forEach(clearTimeout); streamTimers = [];
+  const s1 = document.getElementById("s1"), s2 = document.getElementById("s2");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const t1 = I18N[lang]["demo.stream1"], t2 = I18N[lang]["demo.stream2"];
+  if(reduce){ s1.textContent = t1; s2.textContent = t2; s1.classList.remove("cursor"); s2.classList.remove("cursor"); return; }
+  s1.classList.add("cursor"); s2.classList.add("cursor");
+  typeInto(s1, t1, 26, ()=> s1.classList.remove("cursor"));
+  typeInto(s2, t2, 34, ()=> s2.classList.remove("cursor"));
+}
+
+apply("zh");
+</script>
+</body>
+</html>
