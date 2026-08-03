@@ -7,6 +7,20 @@
 
 Manifest V3 · Side Panel · BYOK · Privacy-first · MIT · 免费开源
 
+<p>
+  <a href="https://github.com/wushu75/longce/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/wushu75/longce?style=for-the-badge&logo=github&color=d7263d&labelColor=17130f"></a>
+  <a href="https://github.com/wushu75/longce/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-1f7a5c?style=for-the-badge&labelColor=17130f"></a>
+  <img alt="Manifest V3" src="https://img.shields.io/badge/Manifest-V3-b8903f?style=for-the-badge&labelColor=17130f">
+  <img alt="Chrome 116+" src="https://img.shields.io/badge/Chrome-116%2B-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=17130f">
+</p>
+
+### ⭐ 喜欢就点个 Star！ · If it's useful, give it a star!
+
+觉得龙侧有用？点右上角的 **⭐ Star** 支持一下 —— 这是对开源最好的鼓励，也能帮更多中文用户发现它。
+Enjoying LongCe? A **⭐ Star** is the best encouragement for open source and helps more people find it.
+
+**👉 [github.com/wushu75/longce](https://github.com/wushu75/longce)**
+
 </div>
 
 ---
