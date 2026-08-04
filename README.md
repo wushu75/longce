@@ -19,7 +19,7 @@ Manifest V3 · Side Panel · BYOK · Privacy-first · MIT · 免费开源
 觉得龙侧有用？点右上角的 **⭐ Star** 支持一下 —— 这是对开源最好的鼓励，也能帮更多中文用户发现它。
 Enjoying LongCe? A **⭐ Star** is the best encouragement for open source and helps more people find it.
 
-**👉 [github.com/wushu75/longce](https://github.com/wushu75/longce)**
+**👉🏿 [github.com/wushu75/longce](https://github.com/wushu75/longce)**
 
 </div>
 
