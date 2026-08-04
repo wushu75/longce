@@ -3,8 +3,96 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>龙侧 LongCe — 每一个中文大模型，一个侧边栏</title>
-<meta name="description" content="龙侧 LongCe：把 DeepSeek、通义千问、Kimi、智谱、零一、百川、MiniMax 装进浏览器侧边栏。开源、自带密钥、数据只在本地。" />
+<title>龙侧 LongCe — 每一个中文大模型，一个侧边栏 | Chinese LLM Chrome Sidebar</title>
+<meta name="description" content="龙侧 LongCe：把 DeepSeek、通义千问、Kimi、智谱、零一、百川、MiniMax 装进浏览器侧边栏。开源免费、自带密钥（BYOK）、多模型对比、数据只在本地。Every Chinese LLM in one Chrome side panel — open source, bring your own key, privacy-first." />
+<meta name="keywords" content="中文大模型, DeepSeek, 通义千问, Kimi, 智谱GLM, 零一万物, 百川, MiniMax, Chrome 扩展, 侧边栏, AI 助手, LongCe, 龙侧, Chinese LLM, browser extension, side panel, BYOK, open source" />
+<meta name="author" content="LongCe" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#d7263d" />
+<link rel="canonical" href="https://wushu75.github.io/longce/" />
+
+<!-- Favicons (files served next to index.html) -->
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
+<link rel="icon" type="image/png" sizes="128x128" href="icon-128.png" />
+<link rel="apple-touch-icon" href="icon-128.png" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="龙侧 LongCe" />
+<meta property="og:title" content="龙侧 LongCe — 每一个中文大模型，一个侧边栏" />
+<meta property="og:description" content="把 DeepSeek、通义千问、Kimi、智谱、零一、百川、MiniMax 装进浏览器侧边栏。开源免费、自带密钥、数据只在本地。" />
+<meta property="og:url" content="https://wushu75.github.io/longce/" />
+<meta property="og:image" content="https://wushu75.github.io/longce/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="龙侧 LongCe — 每一个中文大模型，一个侧边栏" />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:locale:alternate" content="en_US" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="龙侧 LongCe — 每一个中文大模型，一个侧边栏" />
+<meta name="twitter:description" content="把 7 家中文大模型装进浏览器侧边栏。开源、自带密钥、数据只在本地。Every Chinese LLM, one sidebar." />
+<meta name="twitter:image" content="https://wushu75.github.io/longce/og-image.png" />
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "龙侧 LongCe",
+      "alternateName": "LongCe — Chinese LLM Sidebar",
+      "applicationCategory": "BrowserApplication",
+      "operatingSystem": "Chrome 116+",
+      "description": "A privacy-first Chrome side-panel extension that puts seven Chinese LLMs — DeepSeek, Qwen, Kimi, GLM, Yi, Baichuan and MiniMax — in one sidebar. Bring your own keys, compare models, all data stays local.",
+      "url": "https://wushu75.github.io/longce/",
+      "image": "https://wushu75.github.io/longce/og-image.png",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "常驻侧边栏 Always-on side panel",
+        "多模型对比 Compare mode",
+        "页面感知 Page-aware actions",
+        "智能路由 Smart routing",
+        "Lite 模式 Lite mode",
+        "提示词模板 Prompt templates"
+      ],
+      "softwareVersion": "0.1.0",
+      "author": { "@type": "Organization", "name": "LongCe", "url": "https://github.com/wushu75/longce" }
+    },
+    {
+      "@type": "WebSite",
+      "name": "龙侧 LongCe",
+      "url": "https://wushu75.github.io/longce/",
+      "inLanguage": ["zh-CN", "en"]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "龙侧支持哪些中文大模型？",
+          "acceptedAnswer": { "@type": "Answer", "text": "龙侧内置 7 家中文大模型：DeepSeek 深度求索、通义千问 Qwen、月之暗面 Kimi、智谱 GLM、零一万物 Yi、百川 Baichuan、MiniMax。添加新厂商只需一个配置项。" }
+        },
+        {
+          "@type": "Question",
+          "name": "龙侧会收集我的数据吗？",
+          "acceptedAnswer": { "@type": "Answer", "text": "不会。龙侧没有服务器，你的 API 密钥和对话记录只保存在本机 chrome.storage.local，请求从浏览器直接发往你所选厂商，默认不含任何分析或追踪代码。" }
+        },
+        {
+          "@type": "Question",
+          "name": "使用龙侧需要付费吗？",
+          "acceptedAnswer": { "@type": "Answer", "text": "龙侧完全免费、开源，采用 MIT 许可。你只需自备各大模型厂商的 API Key（BYOK），按厂商官方价格付费调用。" }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -506,6 +594,9 @@ function apply(l){
   lang = l;
   document.body.setAttribute("data-lang", l);
   document.documentElement.lang = (l === "zh") ? "zh-CN" : "en";
+  document.title = (l === "zh")
+    ? "龙侧 LongCe — 每一个中文大模型，一个侧边栏 | Chinese LLM Chrome Sidebar"
+    : "LongCe — Every Chinese LLM, one sidebar | Chinese LLM Chrome Extension";
   document.querySelectorAll("[data-i18n]").forEach(el=>{
     const k = el.getAttribute("data-i18n");
     const small = el.querySelector("small");        // preserve utility sub-labels
