@@ -7,6 +7,19 @@
 
 Manifest V3 · Side Panel · BYOK · Privacy-first · MIT · 免费开源
 
+### 🎉 已上架 Chrome 应用商店 · Now live on the Chrome Web Store
+
+<a href="https://chromewebstore.google.com/detail/aammhbdaeklipnjofajadipljgkohkgd"><img alt="Add to Chrome" src="https://img.shields.io/badge/Add%20to%20Chrome-Install-d7263d?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=17130f"></a>
+
+**👉 立即安装 / Install now: [chromewebstore.google.com](https://chromewebstore.google.com/detail/aammhbdaeklipnjofajadipljgkohkgd)**
+**🌐 官网 / Website: [wushu75.github.io/longce](https://wushu75.github.io/longce/)**
+
+<p>
+  <a href="https://chromewebstore.google.com/detail/aammhbdaeklipnjofajadipljgkohkgd"><img alt="Chrome Web Store version" src="https://img.shields.io/chrome-web-store/v/aammhbdaeklipnjofajadipljgkohkgd?style=for-the-badge&logo=googlechrome&logoColor=white&label=Web%20Store&color=4285F4&labelColor=17130f"></a>
+  <a href="https://chromewebstore.google.com/detail/aammhbdaeklipnjofajadipljgkohkgd"><img alt="Chrome Web Store users" src="https://img.shields.io/chrome-web-store/users/aammhbdaeklipnjofajadipljgkohkgd?style=for-the-badge&label=Users&color=1f7a5c&labelColor=17130f"></a>
+  <a href="https://chromewebstore.google.com/detail/aammhbdaeklipnjofajadipljgkohkgd"><img alt="Chrome Web Store rating" src="https://img.shields.io/chrome-web-store/rating/aammhbdaeklipnjofajadipljgkohkgd?style=for-the-badge&label=Rating&color=b8903f&labelColor=17130f"></a>
+</p>
+
 <p>
   <a href="https://github.com/wushu75/longce/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/wushu75/longce?style=for-the-badge&logo=github&color=d7263d&labelColor=17130f"></a>
   <a href="https://github.com/wushu75/longce/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-1f7a5c?style=for-the-badge&labelColor=17130f"></a>
@@ -19,7 +32,7 @@ Manifest V3 · Side Panel · BYOK · Privacy-first · MIT · 免费开源
 觉得龙侧有用？点右上角的 **⭐ Star** 支持一下 —— 这是对开源最好的鼓励，也能帮更多中文用户发现它。
 Enjoying LongCe? A **⭐ Star** is the best encouragement for open source and helps more people find it.
 
-**👉🏿 [github.com/wushu75/longce](https://github.com/wushu75/longce)**
+**👉 [github.com/wushu75/longce](https://github.com/wushu75/longce)**
 
 </div>
 
